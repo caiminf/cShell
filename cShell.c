@@ -1,15 +1,19 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 #define TRUE 1
 #define MAX_COMMAND_LEN 100
 #define MAX_PAR_CNT 15
+#define MAX_HOSTNAME_LEN 10
+#define MAX_PATH_LEN 100
 
 void type_promt();
 int read_command(char *command, char *parameters[]);
+int buildin_command(char *command, char *parameters[]);
 
 int main()
 {
@@ -20,6 +24,8 @@ int main()
 	while(TRUE){
 		type_promt();
 		int cnt = read_command(command, parameters);
+		if(buildin_command(command, parameters))
+			continue;
 		if((childPid = fork()) != 0){
 			waitpid(childPid, &status, 0);
 		}
@@ -36,12 +42,12 @@ void type_promt()
 	struct passwd *pwd = getpwuid(uid);
 	char *uname = pwd -> pw_name;
 	char *uPath = pwd -> pw_dir;
-	char hname[10];
-	gethostname(hname, 10);
-	char abPath[30];
-	getcwd(abPath, 30);
+	char hname[MAX_HOSTNAME_LEN];
+	char abPath[MAX_PATH_LEN];
+	gethostname(hname, MAX_HOSTNAME_LEN);
+	getcwd(abPath, MAX_PATH_LEN);
 	int uPathLen = strlen(uPath);
-	char path[30];
+	char path[MAX_PATH_LEN];
 	if(strncmp(uPath, abPath, uPathLen) == 0){
 		path[0] = '~';
 		strcpy(path + 1, abPath + uPathLen);
@@ -70,4 +76,30 @@ int read_command(char *command, char *parameters[])
 	}
 	parameters[++cnt] = NULL;
 	return cnt;
+}
+
+int buildin_command(char *command, char *parameters[])
+{
+	if(strcmp(command, "exit") == 0 || strcmp(command, "quit") == 0){
+		exit(0);
+	}
+	else if(strcmp(command, "cd") == 0){
+		if(parameters[1][0] == '~'){
+			uid_t uid = getuid();
+			struct passwd *pwd = getpwuid(uid);
+			char *uPath = pwd -> pw_dir;
+			int uPathLen = strlen(uPath);
+			int parLen = strlen(parameters[1]);
+			char *path = malloc((uPathLen + parLen) * sizeof(char));
+			strcpy(path, uPath);
+			strcpy(path + uPathLen, parameters[1] + 1);
+			chdir(path);
+			free(path);
+		}
+		else{
+			chdir(parameters[1]);
+		}
+		return 1;
+	}
+	return 0;
 }

@@ -33,7 +33,7 @@ int main()
 				close(out_fd);
 			}
 			if(info.flag & OUT_REDIRECT_APPEND){
-				out_fd = open(info.out_file, O_WRONLY|O_APPEND|O_TRUNC, 0666);
+				out_fd = open(info.out_file, O_WRONLY|O_APPEND, 0666);
 				close(fileno(stdout));
 				dup2(out_fd, fileno(stdout));
 				close(out_fd);

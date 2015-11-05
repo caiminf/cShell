@@ -1,0 +1,7 @@
+#define TRUE 1
+#define MAX_COMMAND_LEN 100
+#define MAX_PAR_CNT 15
+#define MAX_HOSTNAME_LEN 10
+#define MAX_PATH_LEN 100
+
+

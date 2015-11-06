@@ -14,7 +14,7 @@ int main()
 	char command[MAX_COMMAND_LEN];
 	char *parameters[MAX_PAR_CNT];
 	int status;
-	int out_fd;
+	int out_fd, in_fd;
 	while(TRUE){
 		type_promt();
 		int cnt = read_command(command, parameters);
@@ -37,6 +37,12 @@ int main()
 				close(fileno(stdout));
 				dup2(out_fd, fileno(stdout));
 				close(out_fd);
+			}
+			if(info.flag & IN_REDIRECT){
+				in_fd = open(info.in_file, O_RDONLY, 0666);
+				close(fileno(stdin));
+				dup2(in_fd, fileno(stdin));
+				close(in_fd);
 			}
 			execvp(command, parameters);
 		}

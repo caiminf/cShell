@@ -1,3 +1,6 @@
 # cShell
 A basic Linux shell.  
-Self-implemented shell with basic operations like ls, cd, and so on.
+A self-implemented shell.
+Basic operations, like ls, cd, supported.
+Output/input redirection supported.
+Pipe supported.

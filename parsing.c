@@ -28,5 +28,11 @@ void parsing(char *parameters[], int par_cnt, struct command_info * info)
 			info->in_file = parameters[i+1];
 			parameters[i] = NULL;
 		}
+		else if(strcmp(parameters[i], "|") == 0){
+			info->flag != IS_PIPED;
+			info->command2 = parameters[i+1];
+			parameters[i] = NULL;
+			info->parameters2 = parameters + i + 1;
+		}
 	}
 }
